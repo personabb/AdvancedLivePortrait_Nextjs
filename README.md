@@ -74,3 +74,8 @@ pnpm dev
 ```
 http://localhost:3000/
 ```
+
+# 謝辞
+https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait
+
+こちらの実装コードを利用させていただきました。
