@@ -6,9 +6,7 @@ import debounce from "lodash/debounce";
 export default function Home() {
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false); // ローディング状態の管理
-  const [isUpdating, setIsUpdating] = useState(false); // 画像処理中でもスライダー操作を許可するためのフラグ
-  const [isInitializing, setIsInitializing] = useState(false); // 初期化処理中の状態を管理
+  const [loading, setLoading] = useState(false);
 
   // 環境変数からAPIベースURLを取得
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -29,21 +27,6 @@ export default function Home() {
     smile: 0, // 初期値は0
   });
 
-  const sliderDescriptions: { [key: string]: string } = {
-    rotate_pitch: "顔の縦方向の回転（前後）",
-    rotate_yaw: "顔の横方向の回転（左右）",
-    rotate_roll: "顔の傾き",
-    blink: "瞬きの度合い",
-    eyebrow: "眉毛の動き",
-    wink: "片目のウインク",
-    pupil_x: "瞳の左右の動き",
-    pupil_y: "瞳の上下の動き",
-    aaa: "口を開ける動作",
-    eee: "口を「イ」と発音する動作",
-    woo: "口を「ウ」と発音する動作",
-    smile: "笑顔の度合い（0.5 = 50%笑顔）",
-  };
-
   // パラメータが変更された時に呼び出される関数
   const handleParamChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -51,6 +34,8 @@ export default function Home() {
       ...prevParams,
       [name]: parseFloat(value),
     }));
+
+    // スライダーの値が更新されたタイミングで即座に反映
     console.log(`Updated ${name} to ${value}`);
   };
 
@@ -58,7 +43,6 @@ export default function Home() {
   const sendUpdateToBackend = useCallback(
     debounce(async (newParams) => {
       if (image) {
-        setIsUpdating(true); // 処理が開始されたことを示す
         setLoading(true);
 
         const formData = new FormData();
@@ -83,8 +67,7 @@ export default function Home() {
         } catch (error) {
           console.error("Error while sending API request:", error);
         } finally {
-          setLoading(false); // ローディング終了
-          setIsUpdating(false); // 画像処理終了を示す
+          setLoading(false);
         }
       }
     }, 500), // 500msの遅延を設定
@@ -98,37 +81,11 @@ export default function Home() {
     }
   }, [params, sendUpdateToBackend]);
 
-  // 初期化処理用のAPIリクエスト関数を追加
-  const initializeImage = async (imageFile: File) => {
-    const formData = new FormData();
-    formData.append("file", imageFile);
-  
-    try {
-      setIsInitializing(true); // 初期化開始
-      const response = await fetch(`${API_BASE_URL}/initialize`, {
-        method: "POST",
-        body: formData,
-      });
-  
-      if (!response.ok) {
-        throw new Error(`Initialization API request failed with status ${response.status}`);
-      }
-  
-      const result = await response.json();  // JSONレスポンスを取得
-      console.log(result.message);  // "初期化が完了しました" と表示されるはず
-    } catch (error) {
-      console.error("Error during initialization API request:", error);
-    } finally {
-      setIsInitializing(false); // 初期化終了
-    }   
-  };
-  
   // 画像を選択した際にプレビューを表示するための関数
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setImage(file);
     if (file) {
-      initializeImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
@@ -147,7 +104,7 @@ export default function Home() {
           <img
             src={preview}
             alt="Preview"
-            className="mb-4 h-auto object-contain mr-8" // 画像の右側に空白を追加
+            className="mb-4 w-1/2 max-w-xs h-auto object-contain" // 画像のサイズを縮小
           />
         )}
 
@@ -155,10 +112,7 @@ export default function Home() {
         <div className="flex flex-col items-start justify-center w-1/2 space-y-4">
           {Object.keys(params).map((param) => (
             <div key={param} className="flex items-center space-x-4">
-              {/* スライダーの名称 */}
-              <label className="w-32">{param}</label>
-              
-              {/* スライダー */}
+              <label className="w-24 text-right">{param}</label> {/* ラベルを左側に */}
               <input
                 type="range"
                 name={param}
@@ -168,24 +122,8 @@ export default function Home() {
                 value={params[param as keyof typeof params]}
                 onChange={handleParamChange}
                 className="w-48 h-4" // スライダーの幅を広く、少し太く
-                disabled={isInitializing} // 初期化中はスライダーを無効化
+                disabled={loading} // 画像ロード中も操作可能
               />
-
-              {/* 数値入力フィールド */}
-              <input
-                type="number"
-                name={param}
-                min={param === "smile" ? "-2" : "-20"} // smileだけ-2から2、他は-20から20
-                max={param === "smile" ? "2" : "20"}
-                step={param === "smile" ? "0.1" : "1"}
-                value={params[param as keyof typeof params]}
-                onChange={handleParamChange}
-                className="w-16 p-1 border rounded"
-                disabled={isInitializing} // 初期化中はスライダーを無効化
-              />
-
-              {/* 補足説明 */}
-              <span className="text-gray-500">{sliderDescriptions[param]}</span>
             </div>
           ))}
         </div>
@@ -195,7 +133,6 @@ export default function Home() {
       <input type="file" accept="image/*" onChange={handleImageChange} className="mt-4" />
 
       {loading && <p>画像を処理中...</p>}
-      {isUpdating && !loading && <p>新しい画像を処理中...</p>}
     </div>
   );
 }
