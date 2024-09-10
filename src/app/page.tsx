@@ -87,7 +87,7 @@ export default function Home() {
           setIsUpdating(false); // 画像処理終了を示す
         }
       }
-    }, 500), // 500msの遅延を設定
+    }, 200), // 500msの遅延を設定
     [image, API_BASE_URL]
   );
 
