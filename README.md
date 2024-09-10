@@ -2,14 +2,18 @@
 本リポジトリは、ComfyUIで利用可能なカスタムノードである、「[ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait)」をNext.jsで作成したWebアプリ上で動作させるプロジェクトです。
 
 実行例は下記のYoutubeの動画をご覧ください
+
 工事中
 
 使い方などの詳細は下記の記事に記載しています。そちらをご覧ください
+
 工事中
 
 # 動作確認済み環境
 フロントエンド:M2 Mac
+
 バックエンド: M2 Mac or Ubuntu20.04　or Google Colab
+
 （GPUを利用したローカルサーバを推奨しますが、GPUなしでも動作はします。）
 
 # 前提条件
@@ -64,7 +68,7 @@ pnpm build
 pnpm dev
 ```
 
-##　Webアプリへの接続
+## Webアプリへの接続
 下記のURLに接続してください。
 ```
 http://localhost:3000/
