@@ -7,7 +7,7 @@ https://youtu.be/wQsF2_ucioM
 
 使い方などの詳細は下記の記事に記載しています。そちらをご覧ください
 
-工事中
+https://zenn.dev/asap/articles/c49551ff14d5e9
 
 ## 動作確認済み環境
 フロントエンド:M2 Mac
