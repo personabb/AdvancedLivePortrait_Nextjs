@@ -137,6 +137,24 @@ export default function Home() {
     }
   };
 
+  // リセットボタンのハンドラー
+  const handleReset = () => {
+    setParams({
+      rotate_pitch: 0,
+      rotate_yaw: 0,
+      rotate_roll: 0,
+      blink: 0,
+      eyebrow: 0,
+      wink: 0,
+      pupil_x: 0,
+      pupil_y: 0,
+      aaa: 0,
+      eee: 0,
+      woo: 0,
+      smile: 0,
+    });
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">画像編集ツール</h1>
@@ -188,6 +206,15 @@ export default function Home() {
               <span className="text-gray-500">{sliderDescriptions[param]}</span>
             </div>
           ))}
+
+          {/* リセットボタン */}
+          <button
+            onClick={handleReset}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+            disabled={isInitializing} // 初期化中はリセットボタンも無効化
+          >
+            リセット
+          </button>
         </div>
       </div>
 
