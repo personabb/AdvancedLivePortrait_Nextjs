@@ -166,6 +166,7 @@ export default function Home() {
             src={preview}
             alt="Preview"
             className="mb-4 h-auto object-contain mr-8" // 画像の右側に空白を追加
+            style={{ width: '512px', height: '512px' }} // プレビュー画像のサイズを固定
           />
         )}
 
